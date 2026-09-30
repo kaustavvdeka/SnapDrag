@@ -1,0 +1,74 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #FAF7EE;
+    color: #121212;
+    font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+  }
+
+  /* Custom Neo-Brutalist scrollbar */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #FAF7EE;
+    border-left: 2px solid #121212;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #FFE600;
+    border: 2px solid #121212;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #FF6EA7;
+  }
+}
+
+@layer utilities {
+  .brutal-border {
+    border: 3px solid #121212;
+  }
+  .brutal-border-2 {
+    border: 2px solid #121212;
+  }
+  .brutal-border-4 {
+    border: 4px solid #121212;
+  }
+
+  .brutal-shadow {
+    box-shadow: 4px 4px 0px 0px #121212;
+  }
+  .brutal-shadow-sm {
+    box-shadow: 2px 2px 0px 0px #121212;
+  }
+  .brutal-shadow-lg {
+    box-shadow: 6px 6px 0px 0px #121212;
+  }
+  .brutal-shadow-xl {
+    box-shadow: 8px 8px 0px 0px #121212;
+  }
+
+  /* Interactive tactile button press effects */
+  .brutal-btn-press {
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+  }
+  .brutal-btn-press:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0px 0px #121212;
+  }
+  .brutal-btn-press:active {
+    transform: translate(4px, 4px);
+    box-shadow: 0px 0px 0px 0px #121212;
+  }
+
+  .brutal-card-hover {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .brutal-card-hover:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0px 0px #121212;
+  }
+}
