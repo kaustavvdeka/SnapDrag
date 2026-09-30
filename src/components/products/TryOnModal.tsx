@@ -61,8 +61,9 @@ export const TryOnModal: React.FC<TryOnModalProps> = ({
   const [errorMsg, setErrorMsg] = useState<string>('');
   const [cameraActive, setCameraActive] = useState<boolean>(false);
 
-  // Interactive Mirror Controls
-  const [mirrorViewMode, setMirrorViewMode] = useState<'mirror' | 'split' | 'dress'>('mirror');
+  // Interactive Mirror & Studio Controls
+  const [mirrorViewMode, setMirrorViewMode] = useState<'studio' | 'mirror' | 'split' | 'dress'>('studio');
+  const [studioRenderedUrl, setStudioRenderedUrl] = useState<string | null>(null);
   const [drapeOpacity, setDrapeOpacity] = useState<number>(90);
   const [drapeOffsetY, setDrapeOffsetY] = useState<number>(32);
   const [drapeScale, setDrapeScale] = useState<number>(100);
@@ -132,6 +133,123 @@ export const TryOnModal: React.FC<TryOnModalProps> = ({
     }
   };
 
+  // Helper to compose a high-fidelity white background studio photo
+  const generateStudioWhiteBackgroundPhoto = (
+    custImgUrl: string,
+    dressImgUrl: string,
+    offsetY = drapeOffsetY,
+    opacity = drapeOpacity,
+    scale = drapeScale
+  ): Promise<string> => {
+    return new Promise((resolve) => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 900;
+      canvas.height = 1200;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        resolve(dressImgUrl);
+        return;
+      }
+
+      // 1. Solid Pure Studio White Background
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // 2. Subtle soft studio floor shadow
+      const shadowGrad = ctx.createRadialGradient(
+        canvas.width / 2,
+        canvas.height - 180,
+        40,
+        canvas.width / 2,
+        canvas.height - 180,
+        360
+      );
+      shadowGrad.addColorStop(0, 'rgba(0, 0, 0, 0.1)');
+      shadowGrad.addColorStop(0.5, 'rgba(0, 0, 0, 0.03)');
+      shadowGrad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+      ctx.fillStyle = shadowGrad;
+      ctx.beginPath();
+      ctx.ellipse(canvas.width / 2, canvas.height - 180, 340, 40, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // 3. Customer Portrait
+      const baseImg = new Image();
+      baseImg.crossOrigin = 'anonymous';
+      baseImg.src = custImgUrl;
+
+      baseImg.onload = () => {
+        const custW = canvas.width * 0.82;
+        const custH = canvas.height * 0.82;
+        const custX = (canvas.width - custW) / 2;
+        const custY = 30;
+
+        ctx.drawImage(baseImg, custX, custY, custW, custH);
+
+        // 4. Dress / Garment
+        const dressImg = new Image();
+        dressImg.crossOrigin = 'anonymous';
+        dressImg.src = dressImgUrl;
+
+        dressImg.onload = () => {
+          ctx.save();
+          ctx.globalAlpha = opacity / 100;
+          const targetY = (canvas.height * offsetY) / 100;
+          const targetH = (canvas.height * (100 - offsetY) * scale) / 10000;
+          const dressW = canvas.width * 0.85;
+          const dressX = (canvas.width - dressW) / 2;
+
+          ctx.drawImage(dressImg, dressX, targetY, dressW, targetH);
+          ctx.restore();
+
+          // 5. Studio White Border Vignette to blend outer edges into pure white
+          const vignette = ctx.createRadialGradient(
+            canvas.width / 2,
+            canvas.height / 2,
+            canvas.width * 0.36,
+            canvas.width / 2,
+            canvas.height / 2,
+            canvas.width * 0.6
+          );
+          vignette.addColorStop(0, 'rgba(255, 255, 255, 0)');
+          vignette.addColorStop(0.85, 'rgba(255, 255, 255, 0.25)');
+          vignette.addColorStop(1, 'rgba(255, 255, 255, 0.95)');
+          ctx.fillStyle = vignette;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+          // 6. Luxury Studio Bottom Tag
+          ctx.fillStyle = '#121212';
+          ctx.fillRect(0, canvas.height - 105, canvas.width, 105);
+
+          ctx.fillStyle = '#FFE600';
+          ctx.font = '900 24px monospace';
+          ctx.fillText('SNAPDRAG • GEMINI AI VIRTUAL TRY-ON', 35, canvas.height - 60);
+
+          ctx.fillStyle = '#FFFFFF';
+          ctx.font = 'bold 18px monospace';
+          ctx.fillText(
+            `${product.name.slice(0, 48)} • ${product.shop?.name || 'Local Boutique'}`,
+            35,
+            canvas.height - 25
+          );
+
+          ctx.fillStyle = '#00E599';
+          ctx.font = '900 15px monospace';
+          ctx.fillText('STUDIO WHITE BG', canvas.width - 200, canvas.height - 45);
+
+          resolve(canvas.toDataURL('image/jpeg', 0.95));
+        };
+
+        dressImg.onerror = () => {
+          resolve(canvas.toDataURL('image/jpeg', 0.95));
+        };
+      };
+
+      baseImg.onerror = () => {
+        resolve(dressImgUrl);
+      };
+    });
+  };
+
   const handleGenerateTryOn = async () => {
     setIsGenerating(true);
     setErrorMsg('');
@@ -145,7 +263,18 @@ export const TryOnModal: React.FC<TryOnModalProps> = ({
       });
 
       setTryOnResult(res.data);
-      setMirrorViewMode('mirror');
+      setMirrorViewMode('studio');
+
+      // Check if native Gemini image or generate studio white background photo
+      if (res.data.generatedBy === 'gemini-vision-image' && res.data.tryOnImageUrl) {
+        setStudioRenderedUrl(res.data.tryOnImageUrl);
+      } else {
+        const composite = await generateStudioWhiteBackgroundPhoto(
+          customerImage,
+          res.data.clothImageUrl || primaryProductImage
+        );
+        setStudioRenderedUrl(composite);
+      }
     } catch (err: any) {
       console.error('Try-on error:', err);
       setErrorMsg(err.message || 'Failed to generate virtual try-on. Please try again.');
@@ -155,52 +284,25 @@ export const TryOnModal: React.FC<TryOnModalProps> = ({
   };
 
   const handleDownloadMirrorPhoto = () => {
-    const canvas = document.createElement('canvas');
-    canvas.width = 900;
-    canvas.height = 1200;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    const a = document.createElement('a');
+    a.download = `snapdrag-studio-tryon-${product.slug}.jpg`;
+    a.href = studioRenderedUrl || tryOnResult?.tryOnImageUrl || customerImage;
+    a.click();
+  };
 
-    const baseImg = new Image();
-    baseImg.crossOrigin = 'anonymous';
-    baseImg.src = customerImage;
-
-    baseImg.onload = () => {
-      // Draw background customer portrait
-      ctx.drawImage(baseImg, 0, 0, canvas.width, canvas.height);
-
-      // Draw drape overlay
-      const dressImg = new Image();
-      dressImg.crossOrigin = 'anonymous';
-      dressImg.src = primaryProductImage;
-
-      dressImg.onload = () => {
-        ctx.save();
-        ctx.globalAlpha = drapeOpacity / 100;
-        const targetY = (canvas.height * drapeOffsetY) / 100;
-        const targetH = (canvas.height * (100 - drapeOffsetY) * drapeScale) / 10000;
-        ctx.drawImage(dressImg, 0, targetY, canvas.width, targetH);
-        ctx.restore();
-
-        // Draw branded frame & watermark
-        ctx.fillStyle = 'rgba(18, 18, 18, 0.85)';
-        ctx.fillRect(0, canvas.height - 110, canvas.width, 110);
-
-        ctx.fillStyle = '#FFE600';
-        ctx.font = 'bold 32px monospace';
-        ctx.fillText('SNAPDRAG • VIRTUAL MIRROR', 30, canvas.height - 60);
-
-        ctx.fillStyle = '#FFFFFF';
-        ctx.font = '22px monospace';
-        ctx.fillText(`${product.name.slice(0, 45)}... • ${product.shop?.name || 'Local Boutique'}`, 30, canvas.height - 25);
-
-        // Download link
-        const a = document.createElement('a');
-        a.download = `snapdrag-mirror-${product.slug}.jpg`;
-        a.href = canvas.toDataURL('image/jpeg', 0.9);
-        a.click();
-      };
-    };
+  const updateStudioComposite = async (offsetY = drapeOffsetY, opacity = drapeOpacity, scale = drapeScale) => {
+    if (!tryOnResult) return;
+    if (tryOnResult.generatedBy === 'gemini-vision-image' && tryOnResult.tryOnImageUrl) {
+      return;
+    }
+    const url = await generateStudioWhiteBackgroundPhoto(
+      customerImage,
+      tryOnResult.clothImageUrl || primaryProductImage,
+      offsetY,
+      opacity,
+      scale
+    );
+    setStudioRenderedUrl(url);
   };
 
   const primaryProductImage =
@@ -455,22 +557,33 @@ export const TryOnModal: React.FC<TryOnModalProps> = ({
               >
                 {/* Mirror Mode Switcher */}
                 <div className="flex items-center justify-between gap-1 text-xs font-mono font-bold flex-wrap">
-                  <div className="flex items-center gap-1 bg-white border-2 border-[#121212] p-0.5">
+                  <div className="flex items-center gap-1 bg-white border-2 border-[#121212] p-0.5 overflow-x-auto">
+                    <button
+                      type="button"
+                      onClick={() => setMirrorViewMode('studio')}
+                      className={`px-2.5 py-1 text-[11px] font-black uppercase transition-all whitespace-nowrap ${
+                        mirrorViewMode === 'studio'
+                          ? 'bg-[#FFE600] text-[#121212] border border-[#121212]'
+                          : 'text-neutral-600 hover:text-black'
+                      }`}
+                    >
+                      ✨ Studio White BG
+                    </button>
                     <button
                       type="button"
                       onClick={() => setMirrorViewMode('mirror')}
-                      className={`px-2.5 py-1 text-[11px] font-black uppercase transition-all ${
+                      className={`px-2.5 py-1 text-[11px] font-black uppercase transition-all whitespace-nowrap ${
                         mirrorViewMode === 'mirror'
                           ? 'bg-[#FFE600] text-[#121212] border border-[#121212]'
                           : 'text-neutral-600 hover:text-black'
                       }`}
                     >
-                      🪞 Draped Mirror
+                      🪞 Drape Adjuster
                     </button>
                     <button
                       type="button"
                       onClick={() => setMirrorViewMode('split')}
-                      className={`px-2.5 py-1 text-[11px] font-black uppercase transition-all ${
+                      className={`px-2.5 py-1 text-[11px] font-black uppercase transition-all whitespace-nowrap ${
                         mirrorViewMode === 'split'
                           ? 'bg-[#FFE600] text-[#121212] border border-[#121212]'
                           : 'text-neutral-600 hover:text-black'
@@ -481,7 +594,7 @@ export const TryOnModal: React.FC<TryOnModalProps> = ({
                     <button
                       type="button"
                       onClick={() => setMirrorViewMode('dress')}
-                      className={`px-2.5 py-1 text-[11px] font-black uppercase transition-all ${
+                      className={`px-2.5 py-1 text-[11px] font-black uppercase transition-all whitespace-nowrap ${
                         mirrorViewMode === 'dress'
                           ? 'bg-[#FFE600] text-[#121212] border border-[#121212]'
                           : 'text-neutral-600 hover:text-black'
@@ -496,13 +609,52 @@ export const TryOnModal: React.FC<TryOnModalProps> = ({
                   </span>
                 </div>
 
-                {/* THE VIRTUAL MIRROR CANVAS */}
+                {/* THE VIRTUAL MIRROR & STUDIO CANVAS */}
                 <div
                   ref={mirrorCanvasRef}
-                  className="aspect-[3/4] max-h-[460px] sm:max-h-[520px] w-full bg-neutral-950 border-4 border-[#121212] shadow-brutal-xl relative overflow-hidden mx-auto select-none"
+                  className="aspect-[3/4] max-h-[460px] sm:max-h-[520px] w-full bg-white border-4 border-[#121212] shadow-brutal-xl relative overflow-hidden mx-auto select-none"
                 >
+                  {/* MODE 1: STUDIO WHITE BACKGROUND (Person wearing dress in white background) */}
+                  {mirrorViewMode === 'studio' && (
+                    <div className="w-full h-full relative overflow-hidden bg-white flex items-center justify-center">
+                      <img
+                        src={studioRenderedUrl || tryOnResult?.tryOnImageUrl || customerImage}
+                        alt="Person wearing dress on studio white background"
+                        className="w-full h-full object-contain bg-white"
+                      />
+
+                      {/* Top Badges */}
+                      <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 flex-wrap">
+                        <span className="bg-[#121212] text-[#FFE600] border border-[#121212] px-2 py-0.5 text-[10px] font-mono font-black uppercase shadow-sm">
+                          ✨ Studio White BG
+                        </span>
+                        {tryOnResult?.generatedBy === 'gemini-vision-image' ? (
+                          <span className="bg-[#00E599] text-[#121212] border border-[#121212] px-1.5 py-0.5 text-[10px] font-mono font-black uppercase">
+                            Gemini Vision
+                          </span>
+                        ) : (
+                          <span className="bg-[#38BDF8] text-[#121212] border border-[#121212] px-1.5 py-0.5 text-[10px] font-mono font-black uppercase">
+                            AI Drape Studio
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Small Silhouette Pip */}
+                      <div className="absolute top-2.5 right-2.5 w-14 h-18 sm:w-16 sm:h-20 border-2 border-[#121212] shadow-md overflow-hidden bg-neutral-900">
+                        <img
+                          src={customerImage}
+                          alt="Original portrait"
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute bottom-0 inset-x-0 bg-black/80 text-[8px] text-white text-center font-mono font-bold">
+                          You
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* MODE 2: DRAPED MIRROR WITH INTERACTIVE FABRIC OVERLAY */}
                   {mirrorViewMode === 'mirror' && (
-                    /* Draped Mirror Mode: Customer photo with outfit mapped */
                     <div className="w-full h-full relative overflow-hidden bg-neutral-900">
                       {/* Customer Base Photo */}
                       <img
@@ -564,8 +716,8 @@ export const TryOnModal: React.FC<TryOnModalProps> = ({
                     </div>
                   )}
 
+                  {/* MODE 3: SIDE BY SIDE */}
                   {mirrorViewMode === 'split' && (
-                    /* Side-by-Side Split View */
                     <div className="w-full h-full grid grid-cols-2 relative bg-neutral-950">
                       <div className="h-full relative border-r-2 border-[#FFE600] overflow-hidden">
                         <img
@@ -593,8 +745,8 @@ export const TryOnModal: React.FC<TryOnModalProps> = ({
                     </div>
                   )}
 
+                  {/* MODE 4: DRESS WEAVE DETAIL */}
                   {mirrorViewMode === 'dress' && (
-                    /* High-Detail Outfit Weave View */
                     <div className="w-full h-full relative overflow-hidden bg-neutral-900">
                       <img
                         src={primaryProductImage}
@@ -609,14 +761,37 @@ export const TryOnModal: React.FC<TryOnModalProps> = ({
                   )}
                 </div>
 
+                {/* Studio Prompt Banner */}
+                {mirrorViewMode === 'studio' && (
+                  <div className="p-2.5 bg-[#FAF7EE] border-2 border-[#121212] shadow-brutal-sm text-xs font-mono space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className="font-black text-[#121212] flex items-center gap-1.5">
+                        <Sparkles size={14} className="text-[#121212]" /> Prompt Applied:
+                      </span>
+                      <span className="text-[10px] bg-[#FFE600] border border-[#121212] font-black px-1.5 py-0.2">
+                        STUDIO WHITE BG
+                      </span>
+                    </div>
+                    <p className="text-neutral-700 text-[11px] leading-snug">
+                      "Photorealistic studio catalog photograph of the exact same person from your photo wearing {product.name} on a clean, solid studio white background."
+                    </p>
+                  </div>
+                )}
+
                 {/* Interactive Fit & Position Sliders */}
                 {mirrorViewMode === 'mirror' && (
                   <div className="p-2.5 bg-white border-2 border-[#121212] shadow-brutal-sm space-y-2 text-xs font-mono">
                     <div className="flex items-center justify-between text-[11px] font-black uppercase">
                       <span className="flex items-center gap-1">
-                        <SlidersHorizontal size={13} /> Adjust Drape on Silhouette:
+                        <SlidersHorizontal size={13} /> Fine-tune Drape:
                       </span>
-                      <span className="text-neutral-500">Fine-tune alignment</span>
+                      <button
+                        type="button"
+                        onClick={() => updateStudioComposite()}
+                        className="bg-[#00E599] hover:bg-[#05f0a2] text-[#121212] px-2 py-0.5 font-black text-[10px] border border-[#121212] shadow-xs cursor-pointer"
+                      >
+                        Apply to Studio BG
+                      </button>
                     </div>
 
                     <div className="grid grid-cols-2 gap-3 text-[11px]">
