@@ -36,7 +36,7 @@ const CITY_COORDINATES: Record<string, [number, number]> = {
   Varanasi: [25.3076, 83.0064],
 };
 
-const GEOAPIFY_KEY = '2a6102baa3dd46c984a663c73893d45f';
+const GEOAPIFY_KEY = import.meta.env.VITE_GEOAPIFY_KEY || '';
 
 export const MapDiscoveryPage: React.FC = () => {
   const { selectedCity, setSelectedCity, availableCities } = useLocation();
