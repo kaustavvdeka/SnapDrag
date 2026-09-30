@@ -5,7 +5,6 @@
 SnapDrag is a full-stack, mobile-responsive web platform designed for digitizing physical traditional clothing boutiques (specializing in sarees, mekhela chadors, lehengas, salwar suits, and regional handloom wear).
 
 * **Live Frontend**: [https://snap-drag.vercel.app](https://snap-drag.vercel.app)
-* **Backend API**: [https://snapdrag-backend-1.onrender.com/api/v1](https://snapdrag-backend-1.onrender.com/api/v1)
 
 ---
 
@@ -82,10 +81,10 @@ Create a `.env` file in the `client/` root:
 
 ```env
 # Backend REST API endpoint (must end in /api/v1)
-VITE_API_URL=https://snapdrag-backend-1.onrender.com/api/v1
+VITE_API_URL=http://localhost:5001/api/v1
 
 # Geoapify API Key for Leaflet Map Tiles
-VITE_GEOAPIFY_KEY=2a6102baa3dd46c984a663c73893d45f
+VITE_GEOAPIFY_KEY=your_geoapify_key_here
 ```
 
 ---
@@ -116,8 +115,8 @@ npm run build
 1. Push your repository to GitHub.
 2. In [Vercel Dashboard](https://vercel.com), import your frontend repository.
 3. Configure **Environment Variables** in Vercel:
-   * `VITE_API_URL`: `https://snapdrag-backend-1.onrender.com/api/v1`
-   * `VITE_GEOAPIFY_KEY`: `2a6102baa3dd46c984a663c73893d45f`
+   * `VITE_API_URL`: `https://<your-backend-service>.onrender.com/api/v1`
+   * `VITE_GEOAPIFY_KEY`: `your_geoapify_key_here`
 4. The included [`vercel.json`](./vercel.json) handles client-side routing automatically:
    ```json
    {
