@@ -45,6 +45,7 @@ export const MapDiscoveryPage: React.FC = () => {
   const [selectedShop, setSelectedShop] = useState<Shop | null>(null);
   const [selectedProductForReserve, setSelectedProductForReserve] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [mobileTab, setMobileTab] = useState<'map' | 'list'>('map');
 
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
@@ -203,10 +204,36 @@ export const MapDiscoveryPage: React.FC = () => {
           </div>
         </div>
 
+        {/* Mobile View Toggle */}
+        <div className="flex lg:hidden bg-white border-2 border-[#121212] shadow-brutal-sm p-1 gap-1 text-xs font-mono font-black">
+          <button
+            type="button"
+            onClick={() => setMobileTab('map')}
+            className={`flex-1 py-2 text-center flex items-center justify-center gap-1.5 transition-all ${
+              mobileTab === 'map' ? 'bg-[#00E599] border border-[#121212]' : 'text-neutral-600'
+            }`}
+          >
+            <Compass size={14} /> Map View ({shops.length})
+          </button>
+          <button
+            type="button"
+            onClick={() => setMobileTab('list')}
+            className={`flex-1 py-2 text-center flex items-center justify-center gap-1.5 transition-all ${
+              mobileTab === 'list' ? 'bg-[#FFE600] border border-[#121212]' : 'text-neutral-600'
+            }`}
+          >
+            <Store size={14} /> Store Details {selectedShop ? `(${selectedShop.name.slice(0, 10)}...)` : ''}
+          </button>
+        </div>
+
         {/* Map & Split View */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start h-[700px]">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start h-auto lg:h-[700px]">
           {/* Left: Interactive Leaflet Map Area (8 cols) */}
-          <div className="lg:col-span-8 h-full flex flex-col">
+          <div
+            className={`lg:col-span-8 h-[360px] sm:h-[450px] lg:h-full flex flex-col ${
+              mobileTab === 'map' ? 'block' : 'hidden lg:block'
+            }`}
+          >
             <BrutalCard bg="bg-white" shadow="lg" className="flex-1 relative overflow-hidden flex flex-col border-3 border-[#121212]">
               {/* Leaflet Map DOM Element */}
               <div ref={mapContainerRef} className="w-full h-full relative z-10" />
@@ -224,7 +251,11 @@ export const MapDiscoveryPage: React.FC = () => {
           </div>
 
           {/* Right: Selected Shop Mall/Floor Navigator & Live Inventory (4 cols) */}
-          <div className="lg:col-span-4 h-full flex flex-col space-y-4 overflow-y-auto pr-1">
+          <div
+            className={`lg:col-span-4 h-auto lg:h-full flex flex-col space-y-4 lg:overflow-y-auto pr-0 lg:pr-1 ${
+              mobileTab === 'list' ? 'block' : 'hidden lg:block'
+            }`}
+          >
             {selectedShop ? (
               <>
                 {/* Shop Highlights Card */}

@@ -100,7 +100,7 @@ export const ProductDetailPage: React.FC = () => {
   const location = product.shop?.location;
 
   return (
-    <div className="min-h-screen bg-[#FAF7EE] py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#FAF7EE] py-6 sm:py-8 px-3 sm:px-6 lg:px-8 pb-28 lg:pb-8">
       <div className="max-w-7xl mx-auto">
         {/* Breadcrumbs */}
         <nav className="flex items-center gap-1.5 text-xs font-mono font-bold text-neutral-600 mb-6 truncate">
@@ -362,6 +362,35 @@ export const ProductDetailPage: React.FC = () => {
           onReserveClick={() => setIsReserveModalOpen(true)}
         />
       )}
+
+      {/* STICKY MOBILE ACTION BAR (visible on screens < lg) */}
+      <div className="fixed bottom-0 inset-x-0 bg-[#FAF7EE] border-t-3 border-[#121212] p-3 shadow-2xl z-40 lg:hidden flex items-center justify-between gap-2">
+        <div className="min-w-0 pr-1">
+          <span className="text-[10px] text-neutral-500 font-mono block leading-none">In-Store Price</span>
+          <span className="text-base sm:text-lg font-black text-[#121212] truncate block">
+            ₹{product.discountedPrice.toLocaleString('en-IN')}
+          </span>
+        </div>
+        <div className="flex items-center gap-1.5 shrink-0">
+          <button
+            type="button"
+            onClick={() => setIsTryOnModalOpen(true)}
+            className="bg-[#FFE600] active:bg-[#fff066] text-[#121212] px-2.5 sm:px-3 py-2 border-2 border-[#121212] shadow-brutal-sm font-black text-xs uppercase flex items-center gap-1 cursor-pointer"
+          >
+            <Sparkles size={14} className="fill-[#121212]" />
+            <span>Mirror</span>
+          </button>
+          <button
+            type="button"
+            disabled={!isAvailable}
+            onClick={() => setIsReserveModalOpen(true)}
+            className="bg-[#121212] active:bg-neutral-800 text-white disabled:bg-neutral-300 disabled:text-neutral-500 px-3 sm:px-4 py-2 border-2 border-[#121212] shadow-brutal-sm font-black text-xs uppercase flex items-center gap-1 cursor-pointer"
+          >
+            <BookmarkCheck size={14} />
+            <span>Reserve Hold</span>
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
