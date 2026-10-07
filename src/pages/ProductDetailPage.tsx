@@ -25,7 +25,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.js';
-import TryOnModal from '../components/products/TryOnModal.js';
+import MirrorTryOnModal from '../components/products/MirrorTryOnModal.js';
 
 export const ProductDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -284,9 +284,9 @@ export const ProductDetailPage: React.FC = () => {
                 className="w-full bg-[#FFE600] hover:bg-[#FFF066] text-[#121212] font-black uppercase text-sm sm:text-base py-3.5 px-4 border-3 border-[#121212] shadow-brutal hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-brutal-sm active:translate-x-1 active:translate-y-1 active:shadow-none transition-all flex items-center justify-center gap-2.5 cursor-pointer"
               >
                 <Sparkles size={20} className="text-[#121212] fill-[#121212]" />
-                <span>TRY YOURSELF — AI VIRTUAL MIRROR</span>
+                <span>✨ Try with Mirror</span>
                 <span className="text-[10px] font-mono bg-[#121212] text-[#FFE600] px-1.5 py-0.5 border border-[#121212] font-bold">
-                  GEMINI AI
+                  AI VTON 1.5
                 </span>
               </button>
             </div>
@@ -355,7 +355,7 @@ export const ProductDetailPage: React.FC = () => {
 
       {/* AI Virtual Try-On Modal */}
       {product && isTryOnModalOpen && (
-        <TryOnModal
+        <MirrorTryOnModal
           product={product}
           isOpen={isTryOnModalOpen}
           onClose={() => setIsTryOnModalOpen(false)}
