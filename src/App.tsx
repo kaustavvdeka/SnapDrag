@@ -5,6 +5,7 @@ import { AuthProvider } from './context/AuthContext.js';
 import { LocationProvider } from './context/LocationContext.js';
 import BrutalNavbar from './components/common/BrutalNavbar.js';
 import BrutalFooter from './components/common/BrutalFooter.js';
+import ShoppingAssistant from './components/assistant/ShoppingAssistant.js';
 
 // Pages
 import LandingPage from './pages/LandingPage.js';
@@ -90,6 +91,7 @@ export const App: React.FC = () => {
                 </Routes>
               </main>
               <BrutalFooter />
+              <ShoppingAssistant />
             </div>
           </BrowserRouter>
         </LocationProvider>

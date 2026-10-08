@@ -60,11 +60,11 @@ export const BrutalNavbar: React.FC = () => {
           <div className="flex items-center gap-3">
             <Link to="/" className="flex items-center gap-2.5 group">
               <div className="w-10 h-10 bg-[#FFE600] border-3 border-[#121212] shadow-brutal flex items-center justify-center font-black text-xl tracking-tighter group-hover:bg-[#FF6EA7] transition-colors">
-                SD
+                VX
               </div>
               <div className="flex flex-col">
                 <span className="text-xl md:text-2xl font-black tracking-tight leading-none text-[#121212]">
-                  SnapDrag
+                  Vastrix
                 </span>
                 <span className="text-[10px] font-mono uppercase tracking-widest text-neutral-600 font-bold">
                   Traditional Clothing

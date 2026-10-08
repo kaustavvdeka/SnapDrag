@@ -9,6 +9,10 @@ export interface TryOnResponse {
   success: boolean;
   result: {
     imageUrl: string;
+    userImageUrl?: string;
+    productId?: string;
+    garmentImageUrl?: string;
+    category?: string;
   };
   message?: string;
 }
