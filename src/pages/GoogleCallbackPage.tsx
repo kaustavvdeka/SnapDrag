@@ -76,7 +76,7 @@ export const GoogleCallbackPage: React.FC = () => {
               </h1>
               <div className="inline-block animate-spin w-8 h-8 border-4 border-[#121212] border-t-[#FFE600] rounded-none my-4"></div>
               <p className="text-xs font-mono text-neutral-600">
-                Securing your session with SnapDrag and retrieving your profile.
+                Securing your session with Vastrix and retrieving your profile.
               </p>
             </div>
           )}

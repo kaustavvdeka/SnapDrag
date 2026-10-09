@@ -46,10 +46,10 @@ export const LoginPage: React.FC = () => {
         <BrutalCard bg="bg-white" shadow="xl" className="p-6 md:p-8 space-y-6">
           <div className="text-center space-y-1">
             <div className="w-12 h-12 bg-[#FFE600] border-3 border-[#121212] shadow-brutal flex items-center justify-center font-black text-2xl mx-auto mb-2">
-              SD
+              VX
             </div>
             <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tight text-[#121212]">
-              SIGN IN TO SNAPDRAG
+              SIGN IN TO VASTRIX
             </h1>
             <p className="text-xs font-mono text-neutral-600">
               Access your saved outfits, in-store holds, or shop dashboard.
@@ -118,14 +118,14 @@ export const LoginPage: React.FC = () => {
               </button>
               <button
                 type="button"
-                onClick={() => fillDemo('kamakhya.handloom@snapdrag.local', 'Password@123456')}
+                onClick={() => fillDemo('kamakhya.handloom@vastrix.local', 'Password@123456')}
                 className="p-1.5 bg-[#FAF7EE] border border-[#121212] font-bold hover:bg-[#FFE600] transition-colors"
               >
                 Shopkeeper
               </button>
               <button
                 type="button"
-                onClick={() => fillDemo('admin@snapdrag.local', 'Admin@123456')}
+                onClick={() => fillDemo('admin@vastrix.local', 'Admin@123456')}
                 className="p-1.5 bg-[#FAF7EE] border border-[#121212] font-bold hover:bg-[#FFE600] transition-colors"
               >
                 Admin

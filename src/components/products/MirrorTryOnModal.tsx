@@ -264,7 +264,7 @@ export const MirrorTryOnModal: React.FC<MirrorTryOnModalProps> = ({
             <div className="bg-[#FAF7EE] border-2 border-[#121212] p-2.5 text-xs font-mono flex items-start gap-2 shadow-brutal-xs">
               <Info size={16} className="text-[#38BDF8] shrink-0 mt-0.5" />
               <span>
-                <strong>Stylist Tip:</strong> Upload a clear, full-body or upper-body photo with good lighting. The garment is automatically selected from this SnapDrag product.
+                <strong>Stylist Tip:</strong> Upload a clear, full-body or upper-body photo with good lighting. The garment is automatically selected from this Vastrix product.
               </span>
             </div>
 
@@ -350,7 +350,7 @@ export const MirrorTryOnModal: React.FC<MirrorTryOnModalProps> = ({
               </div>
             </div>
 
-            {/* Step 2: Selected Outfit Banner (Automatically Used from SnapDrag Product) */}
+            {/* Step 2: Selected Outfit Banner (Automatically Used from Vastrix Product) */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <label className="text-xs font-mono font-black uppercase block text-[#121212]">
@@ -474,7 +474,7 @@ export const MirrorTryOnModal: React.FC<MirrorTryOnModalProps> = ({
                     {product.name}
                   </span>
                   <span className="text-[10px] text-neutral-300 truncate block">
-                    {product.shop?.name || 'SnapDrag Partner Boutique'} • ₹{product.discountedPrice.toLocaleString('en-IN')}
+                    {product.shop?.name || 'Vastrix Partner Boutique'} • ₹{product.discountedPrice.toLocaleString('en-IN')}
                   </span>
                 </div>
                 <span className="text-[10px] text-[#00E599] font-black shrink-0 bg-[#121212] px-2 py-1 border border-[#00E599]">

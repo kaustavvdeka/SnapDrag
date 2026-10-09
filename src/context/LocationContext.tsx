@@ -17,7 +17,7 @@ const DEFAULT_CITY = 'Guwahati';
 
 export const LocationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [selectedCity, setSelectedCityState] = useState<string>(() => {
-    return localStorage.getItem('snapdrag_selected_city') || DEFAULT_CITY;
+    return localStorage.getItem('vastrix_selected_city') || localStorage.getItem('snapdrag_selected_city') || DEFAULT_CITY;
   });
 
   const [availableCities, setAvailableCities] = useState<CityLocation[]>([
@@ -47,7 +47,7 @@ export const LocationProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const setSelectedCity = (city: string) => {
     setSelectedCityState(city);
-    localStorage.setItem('snapdrag_selected_city', city);
+    localStorage.setItem('vastrix_selected_city', city);
   };
 
   const requestCurrentLocation = async () => {

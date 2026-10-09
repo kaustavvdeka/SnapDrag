@@ -57,7 +57,7 @@ export const RegisterPage: React.FC = () => {
         <BrutalCard bg="bg-white" shadow="xl" className="p-6 md:p-8 space-y-6">
           <div className="text-center space-y-1">
             <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tight text-[#121212]">
-              JOIN SNAPDRAG
+              JOIN VASTRIX
             </h1>
             <p className="text-xs font-mono text-neutral-600">
               Discover unique traditional clothing or digitize your physical store.

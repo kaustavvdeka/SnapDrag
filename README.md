@@ -1,8 +1,8 @@
-# SnapDrag — Frontend (Web Application)
+# Vastrix — Frontend (Web Application)
 
 > **Discover Online → Check In-Store Stock → Locate Mall Floor & Shop → Hold Free for 48h → Inspect Physically → Purchase Offline**
 
-SnapDrag is a full-stack, mobile-responsive web platform designed for digitizing physical traditional clothing boutiques (specializing in sarees, mekhela chadors, lehengas, salwar suits, and regional handloom wear).
+Vastrix is a full-stack, mobile-responsive web platform designed for digitizing physical traditional clothing boutiques (specializing in sarees, mekhela chadors, lehengas, salwar suits, and regional handloom wear).
 
 * **Live Frontend**: [https://snap-drag.vercel.app](https://snap-drag.vercel.app)
 

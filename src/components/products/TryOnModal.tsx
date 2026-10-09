@@ -222,7 +222,7 @@ export const TryOnModal: React.FC<TryOnModalProps> = ({
 
           ctx.fillStyle = '#FFE600';
           ctx.font = '900 24px monospace';
-          ctx.fillText('SNAPDRAG • GEMINI AI VIRTUAL TRY-ON', 35, canvas.height - 60);
+          ctx.fillText('VASTRIX • GEMINI AI VIRTUAL TRY-ON', 35, canvas.height - 60);
 
           ctx.fillStyle = '#FFFFFF';
           ctx.font = 'bold 18px monospace';
@@ -285,7 +285,7 @@ export const TryOnModal: React.FC<TryOnModalProps> = ({
 
   const handleDownloadMirrorPhoto = () => {
     const a = document.createElement('a');
-    a.download = `snapdrag-studio-tryon-${product.slug}.jpg`;
+    a.download = `vastrix-studio-tryon-${product.slug}.jpg`;
     a.href = studioRenderedUrl || tryOnResult?.tryOnImageUrl || customerImage;
     a.click();
   };
@@ -690,7 +690,7 @@ export const TryOnModal: React.FC<TryOnModalProps> = ({
                       <div className="absolute bottom-3 left-3 right-3 bg-black/80 backdrop-blur-xs border border-white/20 p-2 text-white font-mono flex items-center justify-between">
                         <div className="truncate">
                           <span className="text-[10px] text-[#FFE600] font-black uppercase block tracking-wider">
-                            SnapDrag Virtual Mirror
+                            Vastrix Virtual Mirror
                           </span>
                           <span className="text-xs font-bold truncate block">
                             {product.name}

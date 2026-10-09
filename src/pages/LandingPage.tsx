@@ -238,7 +238,7 @@ export const LandingPage: React.FC = () => {
               The In-Store Discovery Workflow
             </span>
             <h2 className="text-3xl sm:text-4xl font-black uppercase tracking-tight text-[#121212] mt-2">
-              HOW SNAPDRAG WORKS
+              HOW VASTRIX WORKS
             </h2>
             <p className="text-sm font-medium text-neutral-800 mt-2">
               Forget waiting for couriers or getting cheap synthetic knockoffs. Check the real shop before you make the trip.

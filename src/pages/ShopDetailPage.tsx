@@ -126,7 +126,7 @@ export const ShopDetailPage: React.FC = () => {
               </div>
 
               <div className="text-xs font-mono font-bold text-neutral-600">
-                Member of SnapDrag Artisan Network
+                Member of Vastrix Artisan Network
               </div>
             </div>
 

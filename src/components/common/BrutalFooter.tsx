@@ -35,9 +35,9 @@ export const BrutalFooter: React.FC = () => {
           <div className="space-y-4 md:col-span-1">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 bg-[#FFE600] text-[#121212] border-2 border-white flex items-center justify-center font-black text-lg">
-                SD
+                VX
               </div>
-              <span className="text-2xl font-black tracking-tight">SnapDrag</span>
+              <span className="text-2xl font-black tracking-tight">Vastrix</span>
             </div>
             <p className="text-xs text-neutral-400 font-mono leading-relaxed">
               The digital discovery layer for physical traditional clothing stores. Sarees, Mekhela Chadors, Lehengas, and Handlooms.
@@ -133,13 +133,13 @@ export const BrutalFooter: React.FC = () => {
               <p>✓ Zero packaging waste and zero courier delays</p>
             </div>
             <div className="mt-4 pt-3 border-t border-neutral-800 text-[11px] text-neutral-500 font-mono">
-              Admin Contact: admin@snapdrag.local
+              Admin Contact: admin@vastrix.local
             </div>
           </div>
         </div>
 
         <div className="mt-10 pt-6 border-t border-neutral-800 flex flex-col sm:flex-row items-center justify-between text-xs text-neutral-500 font-mono gap-4">
-          <p>© {new Date().getFullYear()} SnapDrag. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Vastrix. All rights reserved.</p>
           <p className="flex items-center gap-1">
             Built with Neo-Brutalism for India's Traditional Textile Heritage
           </p>

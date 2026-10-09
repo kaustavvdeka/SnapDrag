@@ -60,7 +60,7 @@ export const ShoppingAssistant: React.FC = () => {
     {
       id: 'welcome-1',
       sender: 'assistant',
-      text: `Hello! I am your **SnapDrag AI Shopping Assistant**. Ask me about authentic Assamese Mekhela Chadors, Banarasi sarees, wedding lehengas, or physical boutique locations across ${selectedCity}!\n\nEvery item is available in-store with a **100% free 48-hour hold**.`,
+      text: `Hello! I am your **Vastrix AI Shopping Assistant**. Ask me about authentic Assamese Mekhela Chadors, Banarasi sarees, wedding lehengas, or physical boutique locations across ${selectedCity}!\n\nEvery item is available in-store with a **100% free 48-hour hold**.`,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     },
   ]);
@@ -171,7 +171,7 @@ export const ShoppingAssistant: React.FC = () => {
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
-        aria-label="Open SnapDrag AI Assistant"
+        aria-label="Open Vastrix AI Assistant"
         className="fixed bottom-6 right-6 z-40 bg-[#FFE600] hover:bg-[#fff066] text-[#121212] font-black text-sm uppercase px-4 py-3 border-3 border-[#121212] shadow-brutal hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-brutal-sm active:translate-x-1 active:translate-y-1 active:shadow-none transition-all flex items-center gap-2 cursor-pointer group"
       >
         <span className="relative flex h-3 w-3">
@@ -179,7 +179,7 @@ export const ShoppingAssistant: React.FC = () => {
           <span className="relative inline-flex rounded-full h-3 w-3 bg-[#00E599] border border-[#121212]" />
         </span>
         <Bot size={20} className="text-[#121212] group-hover:rotate-12 transition-transform" />
-        <span className="tracking-tight">Ask SnapDrag</span>
+        <span className="tracking-tight">Ask Vastrix</span>
         <span className="text-[10px] font-mono bg-[#121212] text-[#FFE600] px-1.5 py-0.5 border border-[#121212] font-bold">
           AI
         </span>
@@ -199,7 +199,7 @@ export const ShoppingAssistant: React.FC = () => {
               <div>
                 <div className="flex items-center gap-1.5">
                   <h3 className="font-black text-sm uppercase tracking-tight text-[#121212]">
-                    SnapDrag Assistant
+                    Vastrix Assistant
                   </h3>
                   <span className="text-[9px] font-mono font-black bg-[#00E599] text-[#121212] px-1 border border-[#121212]">
                     LIVE DATA
@@ -378,7 +378,7 @@ export const ShoppingAssistant: React.FC = () => {
               <div className="flex items-center gap-2 p-2 bg-white border border-[#121212] max-w-[260px] shadow-xs">
                 <div className="w-3.5 h-3.5 border-2 border-[#121212] border-t-transparent rounded-full animate-spin shrink-0" />
                 <span className="text-[11px] font-mono font-bold text-neutral-700 animate-pulse">
-                  Querying SnapDrag boutiques...
+                  Querying Vastrix boutiques...
                 </span>
               </div>
             )}
