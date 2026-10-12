@@ -42,7 +42,8 @@ export const RegisterPage: React.FC = () => {
       if (role === 'SHOPKEEPER') {
         navigate('/dashboard');
       } else {
-        navigate('/explore');
+        const redirectParam = searchParams.get('redirect');
+        navigate(redirectParam || '/explore');
       }
     } catch (err: any) {
       setErrorMsg(err.message || 'Registration failed. Please check your details.');
@@ -158,12 +159,15 @@ export const RegisterPage: React.FC = () => {
           <GoogleLoginButton
             role={role}
             label={`Sign Up with Google (${role === 'SHOPKEEPER' ? 'Shopkeeper' : 'Customer'})`}
-            redirectTo={role === 'SHOPKEEPER' ? '/dashboard' : '/explore'}
+            redirectTo={role === 'SHOPKEEPER' ? '/dashboard' : (searchParams.get('redirect') || '/explore')}
           />
 
           <div className="text-center text-xs font-mono text-neutral-600">
             Already have an account?{' '}
-            <Link to="/login" className="font-bold underline text-[#121212] hover:text-[#FF6EA7]">
+            <Link
+              to={searchParams.get('redirect') ? `/login?redirect=${encodeURIComponent(searchParams.get('redirect')!)}` : '/login'}
+              className="font-bold underline text-[#121212] hover:text-[#FF6EA7]"
+            >
               Sign In
             </Link>
           </div>

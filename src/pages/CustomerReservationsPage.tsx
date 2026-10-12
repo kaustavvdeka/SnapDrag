@@ -16,6 +16,11 @@ import {
   XCircle,
   CheckCircle2,
   ShoppingBag,
+  Copy,
+  Check,
+  Phone,
+  ExternalLink,
+  ShieldCheck,
 } from 'lucide-react';
 
 export const CustomerReservationsPage: React.FC = () => {
@@ -25,6 +30,7 @@ export const CustomerReservationsPage: React.FC = () => {
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [cancellingId, setCancellingId] = useState<string | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const fetchReservations = async () => {
     setIsLoading(true);
@@ -47,6 +53,16 @@ export const CustomerReservationsPage: React.FC = () => {
       fetchReservations();
     }
   }, [isAuthenticated, authLoading, navigate]);
+
+  const handleCopyCode = async (reservationId: string, code: string) => {
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopiedId(reservationId);
+      setTimeout(() => setCopiedId(null), 2500);
+    } catch {
+      // fallback
+    }
+  };
 
   const handleCancelReservation = async (reservationId: string) => {
     if (!confirm('Are you sure you want to cancel this in-store reservation? The held item will be released for other customers.')) {
@@ -86,6 +102,30 @@ export const CustomerReservationsPage: React.FC = () => {
     }
   };
 
+  const getExpiryDetails = (res: Reservation) => {
+    if (!res.expiresAt) return null;
+    const expiresTime = new Date(res.expiresAt).getTime();
+    const now = Date.now();
+    const diffHours = Math.round((expiresTime - now) / (1000 * 60 * 60));
+    const isActive = ['PENDING', 'CONFIRMED', 'READY_FOR_VISIT'].includes(res.status);
+
+    if (!isActive) return null;
+
+    if (diffHours > 0) {
+      return (
+        <span className="text-[10px] font-mono font-bold bg-[#FAF7EE] border border-[#121212] px-1.5 py-0.5 text-neutral-800">
+          ⏳ 48h Hold: ~{diffHours}h remaining
+        </span>
+      );
+    } else {
+      return (
+        <span className="text-[10px] font-mono font-bold bg-[#FF4D4D] text-white px-1.5 py-0.5">
+          ⚠ Hold Expiring Soon
+        </span>
+      );
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#FAF7EE] py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto space-y-6">
@@ -116,6 +156,7 @@ export const CustomerReservationsPage: React.FC = () => {
               const shop = res.shop;
               const location = shop?.location;
               const isActive = ['PENDING', 'CONFIRMED', 'READY_FOR_VISIT'].includes(res.status);
+              const isCopied = copiedId === res.id;
 
               return (
                 <BrutalCard
@@ -126,25 +167,38 @@ export const CustomerReservationsPage: React.FC = () => {
                 >
                   {/* Left: Thumbnail & Details */}
                   <div className="flex gap-4 flex-1">
-                    <img
-                      src={
-                        product?.images[0]?.url ||
-                        'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=200&q=80'
-                      }
-                      alt={product?.name}
-                      className="w-24 h-32 object-cover border-2 border-[#121212] shadow-brutal-sm shrink-0"
-                    />
+                    <Link to={product ? `/products/${product.id}` : '#'} className="shrink-0">
+                      <img
+                        src={
+                          product?.images[0]?.url ||
+                          'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=200&q=80'
+                        }
+                        alt={product?.name}
+                        className="w-24 h-32 object-cover border-2 border-[#121212] shadow-brutal-sm hover:opacity-90 transition-opacity"
+                      />
+                    </Link>
 
                     <div className="space-y-1.5 flex-1 min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
                         {getStatusBadge(res.status)}
+                        {getExpiryDetails(res)}
                         <span className="font-mono text-xs font-bold text-neutral-500">
                           Reserved on: {new Date(res.createdAt).toLocaleDateString()}
                         </span>
                       </div>
 
                       <h3 className="font-black text-lg text-[#121212] truncate">
-                        {product?.name}
+                        {product ? (
+                          <Link
+                            to={`/products/${product.id}`}
+                            className="hover:underline hover:text-[#FF6EA7] transition-colors inline-flex items-center gap-1"
+                          >
+                            <span>{product.name}</span>
+                            <ExternalLink size={14} className="shrink-0 text-neutral-500" />
+                          </Link>
+                        ) : (
+                          'Reserved Outfit'
+                        )}
                       </h3>
 
                       <p className="text-xs font-mono text-neutral-700">
@@ -162,18 +216,33 @@ export const CustomerReservationsPage: React.FC = () => {
 
                       {/* Mall Location details */}
                       {location && (
-                        <div className="mt-2 p-2 bg-[#FAF7EE] border border-[#121212] text-xs font-mono">
-                          <p className="font-bold flex items-center gap-1 text-[#121212]">
-                            <Store size={14} /> {shop.name}
-                          </p>
-                          <p className="text-neutral-700 mt-0.5">
+                        <div className="mt-2 p-2.5 bg-[#FAF7EE] border border-[#121212] text-xs font-mono space-y-1">
+                          <div className="flex items-center justify-between">
+                            <p className="font-bold flex items-center gap-1 text-[#121212]">
+                              <Store size={14} /> {shop.name}
+                            </p>
+                            {shop?.phone && (
+                              <a
+                                href={`tel:${shop.phone}`}
+                                className="flex items-center gap-1 text-[11px] font-mono font-bold text-[#121212] hover:bg-[#FFE600] px-2 py-0.5 border border-[#121212] transition-colors"
+                              >
+                                <Phone size={11} /> Call Shop ({shop.phone})
+                              </a>
+                            )}
+                          </div>
+                          <p className="text-neutral-700">
                             {location.mall?.name ? `${location.mall.name}, ` : ''}
                             {location.floorName ? `${location.floorName}, ` : ''}
-                            {location.shopNumber ? `${location.shopNumber}` : ''}
+                            {location.shopNumber ? `Shop #${location.shopNumber}` : ''}
                           </p>
+                          {location.indoorDirections && (
+                            <p className="text-[11px] text-neutral-600 bg-amber-50 p-1.5 border border-amber-300">
+                              🚶 <strong>Indoor Directions:</strong> {location.indoorDirections}
+                            </p>
+                          )}
                           {location.nearbyLandmark && (
-                            <p className="text-[10px] text-neutral-500 mt-0.5">
-                              Landmark: {location.nearbyLandmark}
+                            <p className="text-[10px] text-neutral-500">
+                              📍 Landmark: {location.nearbyLandmark}
                             </p>
                           )}
                         </div>
@@ -184,22 +253,42 @@ export const CustomerReservationsPage: React.FC = () => {
                   {/* Right: Reservation Code & Actions Box */}
                   <div className="w-full md:w-64 bg-[#FAF7EE] border-2 border-[#121212] p-4 text-center space-y-3 shrink-0">
                     <div>
-                      <span className="text-[10px] font-mono font-bold uppercase text-neutral-500">
+                      <span className="text-[10px] font-mono font-bold uppercase text-neutral-500 block">
                         In-Store Pickup Code
                       </span>
-                      <div className="text-2xl font-black font-mono tracking-wider bg-[#FFE600] border-2 border-[#121212] py-1 px-3 shadow-brutal-sm text-[#121212] my-1">
-                        {res.reservationCode}
+                      <div className="flex items-center justify-center gap-2 my-1">
+                        <div className="text-2xl font-black font-mono tracking-wider bg-[#FFE600] border-2 border-[#121212] py-1 px-3 shadow-brutal-sm text-[#121212]">
+                          {res.reservationCode}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => handleCopyCode(res.id, res.reservationCode)}
+                          title="Copy Code"
+                          className="p-1.5 bg-white hover:bg-neutral-100 border-2 border-[#121212] shadow-brutal-sm hover:translate-x-0.5 hover:translate-y-0.5 active:translate-x-1 active:translate-y-1 active:shadow-none transition-all flex items-center gap-1 cursor-pointer font-bold text-[11px]"
+                        >
+                          {isCopied ? (
+                            <>
+                              <Check size={14} className="text-[#00E599]" strokeWidth={3} />
+                              <span className="text-[#00E599] font-black">COPIED</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy size={14} className="text-[#121212]" />
+                              <span className="text-[#121212]">COPY</span>
+                            </>
+                          )}
+                        </button>
                       </div>
                       <p className="text-[10px] font-mono text-neutral-600">
                         Show this to shopkeeper on arrival
                       </p>
                     </div>
 
-                    <div className="text-xs font-mono text-neutral-800 bg-white p-2 border border-neutral-300 text-left">
+                    <div className="text-xs font-mono text-neutral-800 bg-white p-2 border border-neutral-300 text-left space-y-1">
                       <div className="flex items-center gap-1 font-bold">
                         <Calendar size={13} /> Visit Date:
                       </div>
-                      <div className="font-bold text-[#121212] mt-0.5">
+                      <div className="font-bold text-[#121212]">
                         {new Date(res.preferredVisitDate).toLocaleDateString('en-IN', {
                           weekday: 'short',
                           month: 'short',
@@ -207,6 +296,17 @@ export const CustomerReservationsPage: React.FC = () => {
                         })}{' '}
                         ({res.preferredVisitTime || 'Flexible'})
                       </div>
+                      {res.expiresAt && (
+                        <div className="text-[10px] text-neutral-500 pt-1 border-t border-neutral-200">
+                          Hold Valid Until:{' '}
+                          {new Date(res.expiresAt).toLocaleDateString('en-IN', {
+                            day: 'numeric',
+                            month: 'short',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })}
+                        </div>
+                      )}
                     </div>
 
                     {/* Cancel action */}
@@ -234,7 +334,7 @@ export const CustomerReservationsPage: React.FC = () => {
               No Active In-Store Reservations
             </h3>
             <p className="text-xs font-mono text-neutral-600 max-w-md mx-auto">
-              Explore traditional sarees, mekhela chadors, and lehengas from verified local shops and hold any piece for 48 hours.
+              Explore traditional sarees, mekhela chadors, and lehengas from verified local shops and hold any piece for 48 hours with zero advance payment.
             </p>
             <div className="pt-2">
               <Link to="/explore">
@@ -249,3 +349,4 @@ export const CustomerReservationsPage: React.FC = () => {
 };
 
 export default CustomerReservationsPage;
+

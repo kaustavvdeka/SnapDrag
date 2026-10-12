@@ -63,6 +63,22 @@ export const ProductDetailPage: React.FC = () => {
     fetchProduct();
   }, [id]);
 
+  // Auto-open reservation modal if returning from login with a pending draft
+  useEffect(() => {
+    if (!product || !isAuthenticated) return;
+    try {
+      const saved = sessionStorage.getItem('vastrix_pending_reservation');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.productId === product.id) {
+          setIsReserveModalOpen(true);
+        }
+      }
+    } catch {
+      // ignore
+    }
+  }, [product, isAuthenticated]);
+
   const handleFavoriteToggle = async () => {
     if (!isAuthenticated) {
       alert('Please log in as a customer to save favorites.');
@@ -303,7 +319,7 @@ export const ProductDetailPage: React.FC = () => {
                     onClick={() => setIsReserveModalOpen(true)}
                   >
                     <BookmarkCheck size={20} className="mr-2" />
-                    RESERVE & VISIT SHOP (FREE)
+                    {isAvailable ? 'RESERVE & VISIT SHOP (FREE)' : 'OUT OF PHYSICAL STOCK'}
                   </BrutalButton>
                 </div>
 
@@ -351,6 +367,17 @@ export const ProductDetailPage: React.FC = () => {
         product={product}
         isOpen={isReserveModalOpen}
         onClose={() => setIsReserveModalOpen(false)}
+        onSuccess={(newRes) => {
+          setProduct((prev) => {
+            if (!prev) return null;
+            const reservedQty = newRes.quantity || 1;
+            const newAvail = Math.max(0, prev.availableQuantity - reservedQty);
+            return {
+              ...prev,
+              availableQuantity: newAvail,
+            };
+          });
+        }}
       />
 
       {/* AI Virtual Try-On Modal */}

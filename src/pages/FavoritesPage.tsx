@@ -81,6 +81,21 @@ export const FavoritesPage: React.FC = () => {
         product={selectedProductForReserve}
         isOpen={!!selectedProductForReserve}
         onClose={() => setSelectedProductForReserve(null)}
+        onSuccess={(newRes) => {
+          setFavorites((prev) =>
+            prev.map((fav) =>
+              fav.product?.id === newRes.productId
+                ? {
+                    ...fav,
+                    product: {
+                      ...fav.product,
+                      availableQuantity: Math.max(0, fav.product.availableQuantity - (newRes.quantity || 1)),
+                    },
+                  }
+                : fav
+            )
+          );
+        }}
       />
     </div>
   );

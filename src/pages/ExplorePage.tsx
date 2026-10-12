@@ -315,6 +315,15 @@ export const ExplorePage: React.FC = () => {
         product={selectedProductForReserve}
         isOpen={!!selectedProductForReserve}
         onClose={() => setSelectedProductForReserve(null)}
+        onSuccess={(newRes) => {
+          setProducts((prev) =>
+            prev.map((p) =>
+              p.id === newRes.productId
+                ? { ...p, availableQuantity: Math.max(0, p.availableQuantity - (newRes.quantity || 1)) }
+                : p
+            )
+          );
+        }}
       />
     </div>
   );
